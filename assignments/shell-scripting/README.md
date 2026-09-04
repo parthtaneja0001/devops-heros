@@ -96,12 +96,12 @@ After running, a `reports/` directory is created containing `processes.txt`, whi
 
 Script run showing the current date, hostname, username, disk usage, and running processes:
 
-![System information output](screenshots/image.png)
+![System information output](screenshots/image1.png)
 
 End of the process list, the `read -p` input prompts, and the confirmation that the file was saved:
 
-![User input and saved confirmation](<screenshots/image copy.png>)
+![User input and saved confirmation](screenshots/image2.png)
 
 Contents of the created file, confirming the running processes were saved with `>` redirection:
 
-![Saved processes file](<screenshots/image copy 2.png>)
+![Saved processes file](screenshots/image3.png)
