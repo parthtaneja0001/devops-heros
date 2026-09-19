@@ -1,117 +1,94 @@
 # Networking Fundamentals - Homework
 
-Hands-on practice and notes on standard Linux networking commands, including usage syntax, descriptions, practical takeaways, and terminal outputs.
+Practice of common Linux networking commands, with their output and a short explanation of what each one does.
 
----
-
-## 1. `ping`
+## 1. ping
 ```bash
 ping -c 4 google.com
 ```
-Sends ICMP Echo Request packets to a target host to test reachability, network latency, and packet loss. The `-c 4` flag limits the test to four packets.
+Sends ICMP echo request packets to a host to check if it is reachable and how long the round trip takes. Useful for testing basic connectivity and measuring latency. `-c 4` limits it to 4 packets.
 
-**What I understood:** `ping` verifies whether a remote host is active and measures connection response time. Packet loss or timeout indicates network connectivity or DNS issues.
+**What I understood:** `ping` tells me whether a server is up and how fast my connection to it is. If packets are lost or there is no reply, there is a network or DNS problem.
 
 ![ping output](screenshots/ping.png)
 
----
-
-## 2. `ip a` (ip address)
+## 2. ip a (ip address)
 ```bash
 ip a
 ```
-Displays all network interfaces on the system along with assigned IPv4/IPv6 addresses, MAC addresses, and operational status (`UP`/`DOWN`). It is the modern replacement for `ifconfig`.
+Shows all network interfaces on the machine along with their IP addresses, MAC addresses, and status (up/down). This is the modern replacement for `ifconfig`.
 
-**What I understood:** `ip a` is used to find the system's local IP address and view active network interfaces (such as `eth0`, `wlan0`, or `lo` loopback).
+**What I understood:** This is how I find my own machine's IP address and see which network interfaces exist (like `eth0`, `lo` for loopback).
 
 ![ip a output](screenshots/ip-a.png)
 
----
-
-## 3. `ip route`
+## 3. ip route / route
 ```bash
 ip route
 ```
-Displays the system routing table and default gateway settings that direct network traffic to external networks and the internet.
+Displays the routing table, including the default gateway (the router that traffic goes through to reach the internet).
 
-**What I understood:** `ip route` reveals the network path packets follow to exit the local subnet. The `default via` entry represents the router/gateway IP.
+**What I understood:** It shows the path packets take to leave my network. The `default via` line is my gateway/router.
 
 ![ip route output](screenshots/ip-route.png)
 
----
-
-## 4. `ss` (Socket Statistics)
+## 4. netstat / ss
 ```bash
 ss -tulpn
 ```
-Lists active network sockets, listening ports, and associated process IDs. `ss` is the modern, faster replacement for `netstat`. 
-- `-t`: TCP sockets
-- `-u`: UDP sockets
-- `-l`: Listening sockets
-- `-p`: Show process name/PID
-- `-n`: Show numeric ports instead of service names
+Lists network connections, listening ports, and the programs using them. `ss` is the faster modern replacement for `netstat`. Flags: `-t` TCP, `-u` UDP, `-l` listening, `-p` process, `-n` numeric.
 
-**What I understood:** `ss -tulpn` identifies open ports on the server and checks if background daemons (such as SSH on port 22 or HTTP on port 80) are actively listening.
+**What I understood:** This shows which ports are open and which service is listening on each one. Useful to check if a server (like SSH on port 22) is running.
 
 ![ss output](screenshots/ss.png)
 
----
-
-## 5. `curl`
+## 5. curl
 ```bash
 curl -I https://www.google.com
 ```
-Transfers data to or from a server via supported protocols (HTTP, HTTPS, FTP, etc.). The `-I` flag fetches HTTP response headers without downloading the full body.
+Transfers data to or from a server. `-I` fetches only the HTTP response headers. Commonly used to test APIs and web endpoints.
 
-**What I understood:** `curl` tests web server responsiveness directly from the CLI. The HTTP headers provide response status codes (e.g., `200 OK`, `301 Moved Permanently`) and server metadata.
+**What I understood:** `curl` lets me talk to a web server from the terminal. The headers tell me the status code (e.g. `200 OK`) and server details.
 
 ![curl output](screenshots/curl.png)
 
----
-
-## 6. `wget`
+## 6. wget
 ```bash
 wget https://example.com/index.html
 ```
-Non-interactive network downloader that retrieves files over HTTP, HTTPS, or FTP and automatically saves them to the current directory.
+Downloads files from the internet over HTTP, HTTPS, or FTP. Unlike curl, it saves the file to disk by default.
 
-**What I understood:** Unlike `curl` (which outputs content to terminal by default), `wget` is designed specifically for downloading files directly to disk.
+**What I understood:** `wget` is for downloading files/pages directly to my machine.
 
 ![wget output](screenshots/wget.png)
 
----
-
-## 7. `nslookup` / `dig`
+## 7. nslookup / dig
 ```bash
 nslookup google.com
 ```
-Queries DNS (Domain Name System) servers to resolve human-readable domain names into IP addresses and vice versa.
+Queries DNS to resolve a domain name into its IP address (and vice versa).
 
-**What I understood:** `nslookup` verifies DNS hostname resolution. If `nslookup` fails to return an IP address, domain resolution is broken.
+**What I understood:** This shows how a website name gets translated into an IP address by DNS. If this fails, the site name cannot be resolved.
 
 ![nslookup output](screenshots/nslookup.png)
 
----
-
-## 8. `traceroute`
+## 8. traceroute
 ```bash
 traceroute google.com
 ```
-Traces the route packets take to reach a destination host, displaying each router hop along with round-trip response times.
+Shows the full path (each router/hop) that packets take to reach a destination, with the time at each hop.
 
-**What I understood:** `traceroute` maps the full path between my machine and a target server, helping identify where network bottlenecks or connection drops occur.
+**What I understood:** It shows every stop between my machine and the destination, which helps find where a connection slows down or breaks.
 
 ![traceroute output](screenshots/traceroute.png)
 
----
-
-## 9. `hostname`
+## 9. hostname
 ```bash
 hostname
 hostname -I
 ```
-Displays the system's configured network hostname. The `-I` flag outputs all host IP addresses assigned to network interfaces.
+Prints the name of the machine. `-I` prints its IP address(es).
 
-**What I understood:** Provides a quick check of the machine's network name and local IP addresses.
+**What I understood:** A quick way to see the machine's name and IP.
 
 ![hostname output](screenshots/hostname.png)
