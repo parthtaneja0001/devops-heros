@@ -1,71 +1,62 @@
-# Session 11: Kubernetes Networking & Service Types
+# Session 11: Kubernetes Services
 
-## All Services and Pods Baseline Overview
+## All Services and Pods
 
-Inspecting the active cluster status showing deployed microservice workloads, internal IP allocations, and exposed Service definitions using `kubectl get pods,svc -o wide`.
 
-![All Services and Pods Overview](./screenshots/img1.png)
+![alt text](./screenshots/img1.png)
 
----
+## 1. ClusterIP Service
 
-## 1. Type 1: ClusterIP Service (Internal Microservice Networking)
+ClusterIP is the default Service type. It gives a stable virtual IP and a DNS name that only works
+inside the cluster. Kubernetes load balances requests across the healthy Pods matched by the selector.
 
-`ClusterIP` is the default Kubernetes service type. It assigns an immutable virtual IP (VIP) accessible strictly within the internal cluster network. CoreDNS automatically binds the service name to this VIP, and `kube-proxy` load-balances requests across matching Pod endpoints.
+![alt text](./screenshots/img2.png)
 
-![ClusterIP Service Verification](./screenshots/img2.png)
+## 2. NodePort Service
 
----
+NodePort opens the same high port (`30000` to `32767`) on every node, so the app can be reached from
+outside the cluster.
 
-## 2. Type 2: NodePort Service (External Host Access)
+![alt text](./screenshots/img3.png)
 
-`NodePort` builds upon `ClusterIP` by allocating a high-range static port (`30000–32767`) across every worker node's external IP interface. Incoming traffic hitting `<NodeIP>:<NodePort>` is automatically proxied down to the target service and backend Pods.
+## 3. LoadBalancer Service
 
-![NodePort Service Verification](./screenshots/img3.png)
+LoadBalancer asks the cloud provider for an external load balancer. Kubernetes also builds the
+NodePort and ClusterIP layers underneath it. On Minikube the `EXTERNAL-IP` stays `<pending>` until
+`minikube tunnel` is running, because there is no real cloud provider.
 
----
+![alt text](./screenshots/img4.png)
 
-## 3. Type 3: LoadBalancer Service (Cloud Ingress Integration)
+## 4. ExternalName Service
 
-`LoadBalancer` integrates with cloud providers (AWS, GCP, Azure) to automatically provision a external load balancer. It automatically configures underlying `NodePort` and `ClusterIP` layers. When running locally on Minikube without cloud APIs, the `EXTERNAL-IP` stays `<pending>` until `minikube tunnel` is executed.
+ExternalName has no selector, no Pods and no ClusterIP. CoreDNS simply returns a CNAME record that
+points the internal Service name at an external domain.
 
-![LoadBalancer Service Verification](./screenshots/img4.png)
+![alt text](./screenshots/img5.png)
 
----
+## 5. Headless Service
 
-## 4. Type 4: ExternalName Service (DNS CNAME Redirection)
+A Headless Service sets `clusterIP: None`. There is no virtual IP and no load balancing through
+kube-proxy. CoreDNS instead returns one A record per matching Pod, which is how a StatefulSet Pod can
+be addressed directly.
 
-`ExternalName` services map internal cluster DNS names to third-party external hostnames (e.g., `api.github.com` or external database endpoints) via CoreDNS CNAME records. They do not maintain label selectors, virtual IPs, or internal Pod endpoints.
+![alt text](./screenshots/img6.png)
 
-![ExternalName Service Verification](./screenshots/img5.png)
+## Service Types Summary
 
----
-
-## 5. Type 5: Headless Service (`clusterIP: None` for Stateful Workloads)
-
-By explicitly setting `clusterIP: None`, a Headless Service bypasses virtual IP allocation and `kube-proxy` load balancing. CoreDNS responds to queries by returning direct `A` records containing individual Pod IP addresses, enabling direct per-pod network addressing for stateful applications like StatefulSets.
-
-![Headless Service Verification](./screenshots/img6.png)
-
----
-
-## 6. Kubernetes Service Types Summary Matrix
-
-| Service Type | Virtual IP (ClusterIP) | Network Accessibility Boundary | Primary Production Use Cases |
+| Type | ClusterIP | Reachable from | Typical use |
 |---|---|---|---|
-| **ClusterIP** | Allocated | Internal to cluster only | Inter-microservice communication, internal APIs, backend databases |
-| **NodePort** | Allocated | Accessible via Node IP on high ports (`30000-32767`) | Development, staging environments, on-premise ingress |
-| **LoadBalancer** | Allocated | Exposed publicly via Cloud Provider IP | Public-facing web apps and cloud production entry points |
-| **ExternalName** | None | Resolves via CNAME alias to external FQDN | Referencing external third-party APIs or off-cluster databases |
-| **Headless** | `None` | Direct Pod IPs returned via CoreDNS lookup | StatefulSet workloads (Kafka, Cassandra, MongoDB) |
+| ClusterIP | Yes | Inside the cluster only | Internal microservices |
+| NodePort | Yes | Node IP on a high port | Simple external access, dev and test |
+| LoadBalancer | Yes | External IP from the cloud | Public facing service in production |
+| ExternalName | No | Resolves to an external domain | Alias to a database or API outside the cluster |
+| Headless | `None` | Individual Pod IPs | StatefulSets that need stable per Pod addressing |
 
----
+## Minikube Docker Driver Gotcha
 
-## 7. Minikube Docker Driver Networking Gotcha & Resolution
+With the Docker driver, the node runs inside an isolated Docker network, so `<node-ip>:<nodePort>`
+does **not** work from Windows or macOS. Two workarounds:
 
-When using Minikube on macOS or Windows with the Docker driver (`--driver=docker`), worker nodes run inside an isolated Docker bridge container network (`docker0`). As a result, direct connections to `<NodeIP>:<NodePort>` from the host system will time out.
-
-### Resolution Options:
-1. **`minikube service <service-name> --url`:** Spawns a host loopback tunnel that maps a local `127.0.0.1` port directly to the cluster service port.
-2. **`minikube tunnel`:** Runs a background Layer 3 routing daemon that modifies host routing tables to assign accessible IP addresses to `LoadBalancer` services.
-
----
+- `minikube service <svc> --url` opens a tunnel and prints a usable `127.0.0.1` URL. The terminal has
+  to stay open.
+- `minikube tunnel` adds a route so `LoadBalancer` services get a reachable external IP.

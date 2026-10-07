@@ -1,43 +1,37 @@
-# Session 12: Ingress, ConfigMaps, and Secrets
+# Session 12: Ingress, ConfigMaps and Secrets
 
-## 1. Non-Sensitive Configuration Decoupling via ConfigMaps
+## ConfigMap
 
-A `ConfigMap` decouples environment-specific configuration parameters (log levels, database ports, environment flags) from application container images as key-value pairs. This enables the same immutable container image to be deployed across development, staging, and production environments with distinct settings.
+A ConfigMap keeps non secret configuration out of the image, as plain key value pairs. The same image
+can then be used in dev and production with different settings.
 
-![ConfigMap Implementation](./screenshots/img1.png)
+![alt text](./screenshots/img1.png)
 
----
+## Secret
 
-## 2. Sensitive Data Isolation via Kubernetes Secrets
+A Secret holds sensitive values such as passwords and tokens. The values are only **base64 encoded**,
+not encrypted, so anyone who can read the Secret can decode it instantly.
 
-A `Secret` isolates sensitive credentials (passwords, TLS certificates, API tokens) from application code. Key values inside native Kubernetes Secret manifests are **Base64 encoded**—not encrypted. Anyone with RBAC read access can decode Base64 strings using `base64 --decode`.
+![alt text](./screenshots/img2.png)
 
-![Secret Implementation](./screenshots/img2.png)
+## Ingress
 
----
+An Ingress routes outside HTTP traffic to different Services based on the host and the URL path. One
+Ingress can front many Services, which avoids paying for a separate LoadBalancer per service.
 
-## 3. Layer 7 Traffic Routing via Kubernetes Ingress
+The Ingress controller has to be enabled first, since Minikube does not ship it running.
 
-An `Ingress` resource manages external HTTP/HTTPS traffic routing to internal cluster Services based on request hostnames and URL paths. Instead of provisioning an expensive cloud LoadBalancer for every internal service, a single unified Ingress Controller (such as NGINX Ingress) multiplexes external traffic to dozens of internal `ClusterIP` services.
+![alt text](./screenshots/img3.png)
 
-*(Note: The NGINX Ingress Controller addon must be enabled first via `minikube addons enable ingress` before applying Ingress routing rules.)*
+## ConfigMap vs Secret
 
-![Ingress Implementation](./screenshots/img3.png)
-
----
-
-## 4. Architectural Comparison: ConfigMap vs. Secret
-
-| Feature Metric | ConfigMap | Secret |
+| | ConfigMap | Secret |
 |---|---|---|
-| **Primary Data Type** | Non-sensitive configuration (urls, ports, flags) | Sensitive credentials (passwords, tokens, keys) |
-| **Storage Format** | Unencoded plain text | Base64 encoded (not encrypted) |
-| **Object Size Limit** | 1 MiB | 1 MiB |
-| **Pod Consumption Method** | Environment variables or mounted files/volumes | Environment variables or mounted files/volumes |
+| Holds | Plain configuration | Passwords, tokens, keys |
+| Stored as | Plain text | Base64 encoded, not encrypted |
+| Size limit | 1 MiB | 1 MiB |
+| Used in a Pod as | Env vars or mounted files | Env vars or mounted files |
 
-### Enterprise Security Best Practices & DevSecOps Notes
-
-- **Base64 is NOT Encryption:** Base64 is an encoding mechanism for binary data streams, not a security control. Complete protection requires enabling **Encryption at Rest** in `etcd`, enforcing strict Kubernetes RBAC policy permissions, or integrating external secret stores.
-- **External Secret Management:** Production DevSecOps pipelines avoid committing Base64 secrets directly to Git repositories. Tools like **External Secrets Operator (ESO)** or **HashiCorp Vault Agent Injector** dynamically sync credentials from AWS Secrets Manager, Azure Key Vault, or Vault directly into ephemeral Kubernetes cluster secrets.
-
----
+- Base64 is encoding, not security. Real protection needs encryption at rest in `etcd`, RBAC limiting
+  who can read Secrets, or an external vault.
+- Never commit a real Secret manifest to git, since the base64 value decodes in one command.
