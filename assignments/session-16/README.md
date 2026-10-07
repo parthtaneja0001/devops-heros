@@ -38,21 +38,32 @@ The project is a small Python calculator with tests and a build script (`10-fina
 cd session-16-github-actions/session-16-github-actions/10-final-cicd-pipeline
 ```
 
-**Run the application**
+**Run the application** (interactive, type `q` to quit)
 
 ```bash
 python3 app/calculator.py
 ```
 
-![Run application](screenshots/run-app.png)
+```text
+Calculator Application
+----------------------
+Available operations: +, -, *, /
+Type 'q' or 'quit' to exit.
 
-**Install dependencies**
-
-```bash
-python3 -m pip install -r requirements.txt
+Enter calculation (e.g., 10 + 5): Result: 15.0
+Enter calculation (e.g., 10 + 5): Result: 5.0
+Enter calculation (e.g., 10 + 5): Result: 50.0
+Enter calculation (e.g., 10 + 5): Result: 2.0
+Enter calculation (e.g., 10 + 5): Goodbye!
 ```
 
-![Install dependencies](screenshots/install-dependencies.png)
+**Install dependencies** (inside a virtual environment, since macOS Python blocks system-wide `pip install`)
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python3 -m pip install -r requirements.txt
+```
 
 **Run tests**
 
@@ -60,7 +71,15 @@ python3 -m pip install -r requirements.txt
 pytest -v
 ```
 
-![Run tests](screenshots/run-tests.png)
+```text
+tests/test_calculator.py::test_add PASSED                                [ 20%]
+tests/test_calculator.py::test_subtract PASSED                           [ 40%]
+tests/test_calculator.py::test_multiply PASSED                           [ 60%]
+tests/test_calculator.py::test_divide PASSED                             [ 80%]
+tests/test_calculator.py::test_divide_by_zero PASSED                     [100%]
+
+============================== 5 passed in 0.01s ===============================
+```
 
 **Build**
 
@@ -69,7 +88,17 @@ chmod +x build.sh
 ./build.sh
 ```
 
-![Build](screenshots/build.png)
+```text
+=================================
+Starting Application Build
+=================================
+
+Build files:
+-rw-r--r--  build-info.txt
+-rw-r--r--  calculator.py
+
+Build completed successfully.
+```
 
 ---
 
