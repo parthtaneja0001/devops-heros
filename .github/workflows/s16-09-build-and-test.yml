@@ -1,0 +1,45 @@
+name: S16-09 Build and Test Pipeline
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "session-16-github-actions/session-16-github-actions/09-build-and-test/**"
+      - ".github/workflows/s16-09-build-and-test.yml"
+  workflow_dispatch:
+jobs:
+  build-and-test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: session-16-github-actions/session-16-github-actions/09-build-and-test
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v6
+      - name: Setup Python
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - name: Show Python version
+        run: python --version
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+      - name: Run tests
+        run: |
+          pytest -v
+      - name: Build application
+        run: |
+          chmod +x build.sh
+          ./build.sh
+      - name: Show build output
+        run: |
+          ls -la build
+          cat build/build-info.txt
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: calculator-build
+          path: session-16-github-actions/session-16-github-actions/09-build-and-test/build/
