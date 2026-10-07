@@ -1,0 +1,197 @@
+name: S17 DevSecOps Pipeline
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "session-17-devsecops/demo/**"
+      - ".github/workflows/s17-devsecops.yml"
+  workflow_dispatch:
+
+env:
+  APP_DIR: session-17-devsecops/demo
+  IMAGE_NAME: session17-python
+
+jobs:
+  # STEP 1 - Unit tests
+  test:
+    name: Unit Tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.APP_DIR }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Run tests
+        run: pytest --cov=app --cov-report=term-missing
+
+  # STEP 2 - SAST (source code)
+  sast:
+    name: SAST - CodeQL
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: python
+
+      - name: Analyze code
+        uses: github/codeql-action/analyze@v3
+
+  # STEP 3 - SCA (dependencies)
+  sca:
+    name: SCA - Dependency Scan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.APP_DIR }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pip-audit
+
+      - name: Run dependency scan
+        run: pip-audit
+
+  # STEP 4 - Build the image (only after test, sast, sca pass)
+  docker-build:
+    name: Docker Build
+    needs: [test, sast, sca]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        working-directory: ${{ env.APP_DIR }}
+        run: docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+  # STEP 5 - Scan the image with Trivy
+  image-scan:
+    name: Image Scan - Trivy
+    needs: docker-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        working-directory: ${{ env.APP_DIR }}
+        run: docker build -t ${{ env.IMAGE_NAME }}:${{ github.sha }} .
+
+      - name: Scan image with Trivy
+        uses: aquasecurity/trivy-action@0.28.0
+        with:
+          image-ref: ${{ env.IMAGE_NAME }}:${{ github.sha }}
+          severity: HIGH,CRITICAL
+          # report-only for the classroom; set exit-code to "1" to make it a hard gate
+          exit-code: "0"
+
+  # STEP 6 - Push to GitHub Container Registry
+  push:
+    name: Push Image to GHCR
+    needs: image-scan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push image
+        working-directory: ${{ env.APP_DIR }}
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          IMAGE=ghcr.io/$OWNER/${{ env.IMAGE_NAME }}
+          docker build -t $IMAGE:${{ github.sha }} -t $IMAGE:latest .
+          docker push $IMAGE:${{ github.sha }}
+          docker push $IMAGE:latest
+          echo "Pushed $IMAGE:${{ github.sha }}"
+
+  # STEP 7 - Deploy to a Kind cluster and verify the rollout
+  deploy:
+    name: Deploy to Kubernetes
+    needs: push
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    defaults:
+      run:
+        working-directory: ${{ env.APP_DIR }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Create Kind cluster
+        uses: helm/kind-action@v1.10.0
+
+      - name: Let the cluster pull from GHCR
+        run: |
+          kubectl create secret docker-registry ghcr-creds \
+            --docker-server=ghcr.io \
+            --docker-username=${{ github.actor }} \
+            --docker-password=${{ secrets.GITHUB_TOKEN }}
+          kubectl patch serviceaccount default \
+            -p '{"imagePullSecrets":[{"name":"ghcr-creds"}]}'
+
+      - name: Point the Deployment at the new image
+        run: |
+          OWNER=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          sed -i "s|image: .*|image: ghcr.io/$OWNER/${{ env.IMAGE_NAME }}:${{ github.sha }}|" k8s/deployment.yaml
+          grep "image:" k8s/deployment.yaml
+
+      - name: Deploy to Kubernetes
+        run: |
+          kubectl apply -f k8s/deployment.yaml
+          kubectl apply -f k8s/service.yaml
+
+      - name: Check rollout status
+        run: |
+          kubectl rollout status deployment/session17-python --timeout=120s
+          kubectl get deployment,pods,service
+
+      - name: Test the running app (curl)
+        run: |
+          kubectl port-forward service/session17-python 5001:80 &
+          sleep 5
+          echo "Health:"
+          curl -s http://localhost:5001/health
+          echo
+          echo "Status:"
+          curl -s http://localhost:5001/api/status
