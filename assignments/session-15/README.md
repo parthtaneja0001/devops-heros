@@ -16,15 +16,15 @@
 
 ### Verifying Helm Version & Listing Active Releases
 
-![Helm version and release check](./Screenshots/img-1.png)
+![Helm version and release check](./screenshots/img-1.png)
 
 ### Installing a Public Helm Chart
 
-![Installing public chart](./Screenshots/img-2.png)
+![Installing public chart](./screenshots/img-2.png)
 
 ### Inspecting & Uninstalling a Release
 
-![Checking and uninstalling release](./Screenshots/img-3.png)
+![Checking and uninstalling release](./screenshots/img-3.png)
 
 ---
 
@@ -36,15 +36,15 @@
 
 ### Scaffold a New Chart Directory
 
-![Creating chart skeleton](./Screenshots/img-4.png)
+![Creating chart skeleton](./screenshots/img-4.png)
 
 ### Rendering Template Output Locally
 
-![Helm template rendering](./Screenshots/img-5.png)
+![Helm template rendering](./screenshots/img-5.png)
 
 ### Managing Release Lifecycle (Install, List, Uninstall)
 
-![Helm install list and uninstall](./Screenshots/img-6.png)
+![Helm install list and uninstall](./screenshots/img-6.png)
 
 ---
 
@@ -61,11 +61,11 @@ Go template parameters inject release context (e.g., `{{ .Release.Name }}`) and 
 
 ### Rendering Custom Templates
 
-![Rendering template with custom values](./Screenshots/img-7.png)
+![Rendering template with custom values](./screenshots/img-7.png)
 
 ### Installing the Custom Chart
 
-![Installing custom chart](./Screenshots/img-8.png)
+![Installing custom chart](./screenshots/img-8.png)
 
 ---
 
@@ -78,7 +78,7 @@ Go template parameters inject release context (e.g., `{{ .Release.Name }}`) and 
 | `appVersion` | The version of the **application being deployed** (typically matches container image tag). |
 | `type` | Chart classification: `application` (deployable workload) or `library` (shared helper templates). |
 
-![Chart.yaml metadata inspection](./Screenshots/img-9.png)
+![Chart.yaml metadata inspection](./screenshots/img-9.png)
 
 ---
 
@@ -97,11 +97,11 @@ values.yaml  ──►  -f custom-values.yaml  ──►  --set key=value  (high
 
 ### Overriding Parameters at Deployment Time
 
-![Overriding parameters during install](./Screenshots/img-10.png)
+![Overriding parameters during install](./screenshots/img-10.png)
 
 ### Inspecting Computed Release Values
 
-![Viewing computed release values](./Screenshots/img-11.png)
+![Viewing computed release values](./screenshots/img-11.png)
 
 ---
 
@@ -109,7 +109,7 @@ values.yaml  ──►  -f custom-values.yaml  ──►  --set key=value  (high
 
 Helm templates utilize Go template logic. Conditional blocks like `{{- if .Values.service.enabled }}` ... `{{- end }}` dynamically include or exclude manifest blocks based on configuration flags.
 
-![Helm template conditional logic](./Screenshots/img-12.png)
+![Helm template conditional logic](./screenshots/img-12.png)
 
 ---
 
@@ -125,15 +125,15 @@ Every `install`, `upgrade`, or `rollback` command creates an incremental **Revis
 
 ### Executing Initial Installation
 
-![Initial installation](./Screenshots/img-13.png)
+![Initial installation](./screenshots/img-13.png)
 
 ### Upgrading Workload Replicas
 
-![Upgrading release replicas](./Screenshots/img-14.png)
+![Upgrading release replicas](./screenshots/img-14.png)
 
 ### Idempotent Deployments with `--install`
 
-![Helm upgrade with install flag](./Screenshots/img-15.png)
+![Helm upgrade with install flag](./screenshots/img-15.png)
 
 ---
 
@@ -145,15 +145,15 @@ Every `install`, `upgrade`, or `rollback` command creates an incremental **Revis
 
 ### Simulating a Failed Upgrade
 
-![Simulating failed upgrade](./Screenshots/img-16.png)
+![Simulating failed upgrade](./screenshots/img-16.png)
 
 ### Rolling Back to a Healthy Revision
 
-![Executing helm rollback](./Screenshots/img-17.png)
+![Executing helm rollback](./screenshots/img-17.png)
 
 ### Enabling Automatic Failure Rollbacks (`--atomic`)
 
-![Helm atomic rollback execution](./Screenshots/img-18.png)
+![Helm atomic rollback execution](./screenshots/img-18.png)
 
 ---
 
@@ -167,19 +167,19 @@ helm lint  ──►  helm template  ──►  helm install  ──►  helm up
 
 ### Linting and Template Validation
 
-![Helm lint and template](./Screenshots/img-19.png)
+![Helm lint and template](./screenshots/img-19.png)
 
 ### Installing and Verifying Release
 
-![Helm guestbook installation](./Screenshots/img-20.png)
+![Helm guestbook installation](./screenshots/img-20.png)
 
 ### Upgrading and Inspecting History
 
-![Helm upgrade and history](./Screenshots/img-21.png)
+![Helm upgrade and history](./screenshots/img-21.png)
 
 ### Rolling Back & Cleaning Up Resources
 
-![Rollback and cleanup](./Screenshots/img-22.png)
+![Rollback and cleanup](./screenshots/img-22.png)
 
 ---
 
@@ -189,27 +189,27 @@ Packaging and deploying a `notes-chart` application with multi-environment value
 
 ### Chart Validation & Rendering
 
-![Notes chart lint and template](./Screenshots/img-23.png)
+![Notes chart lint and template](./screenshots/img-23.png)
 
 ### Deploying Development Environment (`values.yaml`)
 
-![Dev environment deployment](./Screenshots/img-24.png)
+![Dev environment deployment](./screenshots/img-24.png)
 
 ### Upgrading to Production Environment (`values-prod.yaml`)
 
-![Production environment upgrade](./Screenshots/img-25.png)
+![Production environment upgrade](./screenshots/img-25.png)
 
 ### Simulating Faulty Deployment
 
-![Faulty deployment simulation](./Screenshots/img-26.png)
+![Faulty deployment simulation](./screenshots/img-26.png)
 
 ### Executing Revision Rollback
 
-![Rollback to revision 2](./Screenshots/img-27.png)
+![Rollback to revision 2](./screenshots/img-27.png)
 
 ### Uninstalling and Cleaning Up Project
 
-![Uninstalling notes project](./Screenshots/img-28.png)
+![Uninstalling notes project](./screenshots/img-28.png)
 
 ---
 

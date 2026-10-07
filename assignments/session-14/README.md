@@ -14,15 +14,15 @@ kubectl get ──► kubectl describe ──► Check Events ──► Inspect 
 
 ### Listing Pods & Extended Wide Metadata
 
-![kubectl get pods wide output](./Screenshots/img-1.png)
+![kubectl get pods wide output](./screenshots/img-1.png)
 
 ### Inspecting Other Cluster Resources
 
-![kubectl get other resources](./Screenshots/img-2.png)
+![kubectl get other resources](./screenshots/img-2.png)
 
 ### Watching Real-Time State Transitions
 
-![kubectl get watch mode](./Screenshots/img-3.png)
+![kubectl get watch mode](./screenshots/img-3.png)
 
 ---
 
@@ -30,7 +30,7 @@ kubectl get ──► kubectl describe ──► Check Events ──► Inspect 
 
 `kubectl describe` reveals **why** a resource is in a specific state. Key sections to inspect include container **`State`**, **`Conditions`**, and **`Events`** at the bottom of the output.
 
-![kubectl describe output](./Screenshots/img-4.png)
+![kubectl describe output](./screenshots/img-4.png)
 
 ---
 
@@ -42,7 +42,7 @@ Inspect standard output (`stdout`) and standard error (`stderr`) generated direc
 - **`--previous`:** Fetches logs from the previously terminated/crashed container instance.
 - **`-c <container_name>`:** Targets a specific container inside a multi-container Pod.
 
-![kubectl logs command](./Screenshots/img-5.png)
+![kubectl logs command](./screenshots/img-5.png)
 
 ---
 
@@ -54,11 +54,11 @@ Executes commands directly inside a running container to test network connectivi
 
 ### Interactive Shell Access
 
-![kubectl exec interactive shell](./Screenshots/img-6.png)
+![kubectl exec interactive shell](./screenshots/img-6.png)
 
 ### One-Off Command Execution
 
-![kubectl exec direct command](./Screenshots/img-7.png)
+![kubectl exec direct command](./screenshots/img-7.png)
 
 ---
 
@@ -68,11 +68,11 @@ Events record significant cluster activities—such as scheduling decisions, ima
 
 ### Listing Cluster Events
 
-![Listing Cluster Events](./Screenshots/img-8.png)
+![Listing Cluster Events](./screenshots/img-8.png)
 
 ### Viewing Events via `describe` & `kubectl events`
 
-![Events in describe output](./Screenshots/img-9.png)
+![Events in describe output](./screenshots/img-9.png)
 
 ---
 
@@ -82,15 +82,15 @@ Events record significant cluster activities—such as scheduling decisions, ima
 
 ### Identifying Broken Pod State
 
-![CrashLoopBackOff Pod State](./Screenshots/img-10.png)
+![CrashLoopBackOff Pod State](./screenshots/img-10.png)
 
 ### Extracting Crash Logs
 
-![Logs showing exit code 1](./Screenshots/img-11.png)
+![Logs showing exit code 1](./screenshots/img-11.png)
 
 ### Applying Fix & Verifying Resolution
 
-![Fixed Pod running state](./Screenshots/img-12.png)
+![Fixed Pod running state](./screenshots/img-12.png)
 
 ---
 
@@ -100,11 +100,11 @@ Occurs when Kubernetes cannot pull the specified container image due to invalid 
 
 ### Inspecting Image Pull Error
 
-![ImagePullBackOff error](./Screenshots/img-13.png)
+![ImagePullBackOff error](./screenshots/img-13.png)
 
 ### Resolving Image Tag & Deploying Fix
 
-![ImagePullBackOff resolved](./Screenshots/img-14.png)
+![ImagePullBackOff resolved](./screenshots/img-14.png)
 
 ---
 
@@ -114,11 +114,11 @@ A Pod remains in `Pending` when the Kubernetes scheduler cannot assign it to any
 
 ### Analyzing Unscheduled Pod
 
-![Pending pod due to nodeSelector](./Screenshots/img-15.png)
+![Pending pod due to nodeSelector](./screenshots/img-15.png)
 
 ### Correcting Node Specifications
 
-![Pending pod resolved](./Screenshots/img-16.png)
+![Pending pod resolved](./screenshots/img-16.png)
 
 ---
 
@@ -132,25 +132,25 @@ Pod Labels  ──►  Service Selector  ──►  Endpoints  ──►  Servic
 
 ### Identifying Mismatched Selectors
 
-![Service showing empty endpoints](./Screenshots/img-17.png)
+![Service showing empty endpoints](./screenshots/img-17.png)
 
 ### Updating Selector & Verifying Endpoints
 
-![Service endpoints populated](./Screenshots/img-18.png)
+![Service endpoints populated](./screenshots/img-18.png)
 
 ### Testing Cluster DNS & HTTP Connectivity
 
 Kubernetes internal DNS convention: `service-name.namespace.svc.cluster.local`.
 
-![DNS lookup and HTTP wget test](./Screenshots/img-19.png)
+![DNS lookup and HTTP wget test](./screenshots/img-19.png)
 
 ### Inspecting Broken Service Configurations
 
-![Broken service details](./Screenshots/img-20.png)
+![Broken service details](./screenshots/img-20.png)
 
 ### Verifying CoreDNS Component Health
 
-![CoreDNS pods check](./Screenshots/img-21.png)
+![CoreDNS pods check](./screenshots/img-21.png)
 
 ---
 
@@ -158,19 +158,19 @@ Kubernetes internal DNS convention: `service-name.namespace.svc.cluster.local`.
 
 ### Step 1: Deploying the Application Workload
 
-![Deploying Mini Project Application](./Screenshots/img-22.png)
+![Deploying Mini Project Application](./screenshots/img-22.png)
 
 ### Step 2: Verifying Workload Status
 
-![Checking Mini Project Pods](./Screenshots/img-23.png)
+![Checking Mini Project Pods](./screenshots/img-23.png)
 
 ### Step 3: Inspecting Service & Endpoints
 
-![Checking Service Endpoints](./Screenshots/img-24.png)
+![Checking Service Endpoints](./screenshots/img-24.png)
 
 ### Step 4: Investigating Broken Pod Instance
 
-![Broken Pod State](./Screenshots/img-25.png)
+![Broken Pod State](./screenshots/img-25.png)
 
 #### Diagnostic Q&A
 
@@ -187,11 +187,11 @@ Kubernetes internal DNS convention: `service-name.namespace.svc.cluster.local`.
 
 ### Step 5: Diagnosing Service Selector Mismatch
 
-![Service Selector Issue](./Screenshots/img-26.png)
+![Service Selector Issue](./screenshots/img-26.png)
 
 ### Step 6: Root Cause Resolution & Verification
 
-![Root Cause Fixed](./Screenshots/img-27.png)
+![Root Cause Fixed](./screenshots/img-27.png)
 
 ---
 
