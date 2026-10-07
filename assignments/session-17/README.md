@@ -204,7 +204,7 @@ The source can be clean while the final image still contains vulnerable OS packa
   run: docker build -t session17-python:${{ github.sha }} .
 
 - name: Scan image with Trivy
-  uses: aquasecurity/trivy-action@0.28.0
+  uses: aquasecurity/trivy-action@v0.36.0
   with:
     image-ref: session17-python:${{ github.sha }}
     severity: HIGH,CRITICAL
